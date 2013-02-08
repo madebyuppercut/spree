@@ -5,7 +5,7 @@ source 'http://rubygems.org'
 
 gem 'json'
 gem 'sqlite3'
-gem 'mysql2'
+#gem 'mysql2'
 gem 'pg'
 gem 'multi_json', "1.2.0"
 # Gems used only for assets and not required
@@ -20,7 +20,7 @@ group :test do
   gem 'factory_girl_rails', '~> 1.7.0'
   gem 'email_spec', '~> 1.2.1'
 
-  gem 'ffaker'
+  gem 'ffaker', '~> 1.12.0'
   gem 'shoulda-matchers', '~> 1.0.0'
   gem 'capybara', '1.1.3'
   gem 'selenium-webdriver', '2.27.1'
