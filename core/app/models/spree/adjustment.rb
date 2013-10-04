@@ -37,9 +37,8 @@ module Spree
     # Update the boolean _eligible_ attribute which deterimes which adjustments count towards the order's
     # adjustment_total.
     def set_eligibility
-      update_attribute_without_callbacks(:eligible,
-                                         mandatory ||
-                                         (amount != 0 && eligible_for_originator?))
+      result = mandatory || ((amount != 0 || promotion?) && eligible_for_originator?)
+      update_attribute_without_callbacks(:eligible, result)
     end
 
     # Allow originator of the adjustment to perform an additional eligibility of the adjustment
@@ -63,6 +62,10 @@ module Spree
         originator.update_adjustment(self, src)
       end
       set_eligibility
+    end
+
+    def promotion?
+      originator_type == 'Spree::PromotionAction'
     end
 
     def currency
