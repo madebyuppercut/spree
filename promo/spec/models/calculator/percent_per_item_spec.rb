@@ -4,12 +4,15 @@ describe Spree::Calculator::PercentPerItem do
   # Like an order object, but not quite...
   let!(:product1) { double("Product") }
   let!(:product2) { double("Product") }
-  let!(:line_items) { [double("LineItem", :quantity => 5, :product => product1, :price => 10), double("LineItem", :quantity => 1, :product => product2, :price => 10)] }
+  let!(:line_items) { [double("LineItem", :quantity => 5, :product => product1, :price => 10), 
+                       double("LineItem", :quantity => 1, :product => product2, :price => 10)] }
   let!(:object) { double("Order", :line_items => line_items) }
 
   let!(:promotion_calculable) { double("Calculable", :promotion => promotion) }
-
   let!(:promotion) { double("Promotion", :rules => [double("Rule", :products => [product1])]) }
+
+  let!(:promotion_calculable_without_products) { double("Calculable", :promotion => promotion_without_products) }
+  let!(:promotion_without_products) { double("Promotion", :rules => [double("Rule", :products => [])]) }                                         
 
   let!(:calculator) { Spree::Calculator::PercentPerItem.new(:preferred_percent => 0.25) }
 
@@ -21,6 +24,11 @@ describe Spree::Calculator::PercentPerItem do
   it "correctly calculates per item promotion" do
     calculator.stub(:calculable => promotion_calculable)
     calculator.compute(object).to_f.should == 12.5 # 5 x 10 x 0.25 since only product1 is included in the promotion rule
+  end
+
+  it "correctly calculates per item promotion without products" do
+    calculator.stub(:calculable => promotion_calculable_without_products)
+    calculator.compute(object).to_f.should == 15.0 # 6 x 10 x 0.25 
   end
 
   it "returns 0 when no object passed" do

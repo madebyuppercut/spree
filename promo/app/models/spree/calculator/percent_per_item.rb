@@ -25,8 +25,11 @@ module Spree
 
     # Returns all products that match the promotion's rule. 
     def matching_products
-      @matching_products ||= if compute_on_promotion?
-        self.calculable.promotion.rules.map(&:products).flatten
+      if compute_on_promotion?
+        products = self.calculable.promotion.rules.map do |rule|
+          rule.respond_to?(:products) ? rule.products : []
+        end
+        products.flatten
       end
     end
 
@@ -34,7 +37,7 @@ module Spree
     # unless the product is included in the promotion rules.
     def value_for_line_item(line_item)
       if compute_on_promotion?
-        return 0 unless matching_products.include?(line_item.product)
+        return 0 unless matching_products.blank? or matching_products.include?(line_item.product)
       end
       line_item.price * line_item.quantity * preferred_percent
     end
